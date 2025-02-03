@@ -24,7 +24,7 @@ Cross-Model Entity Alignment is an AI-driven project focused on **aligning entit
 │   ├── pg/
 │   │   ├── nodes.csv
 │   │   └── edges.csv
-│   └── alignment.csv
+│   └── alignments.csv
 ├── encoders/
 │   ├── rdf_encoder.py
 │   └── pg_encoder.py
