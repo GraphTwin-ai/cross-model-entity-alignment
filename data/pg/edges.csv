@@ -1,0 +1,9 @@
+start,end,type,properties
+1,3,DOCTORAL_ADVISOR,"{}"
+1,4,EMPLOYER,"{}"
+1,8,EMPLOYER,"{}"
+1,6,KNOWN_FOR,"{}"
+1,7,AWARDED,"{}"
+3,9,EMPLOYER,"{}"
+4,5,LOCATED_IN,"{}"
+8,5,LOCATED_IN,"{}"

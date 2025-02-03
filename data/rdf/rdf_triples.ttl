@@ -1,0 +1,30 @@
+@prefix dbo: <http://dbpedia.org/ontology/> .
+@prefix dbr: <http://dbpedia.org/resource/> .
+
+dbr:Albert_Einstein a dbo:Person ;
+    dbo:birthPlace dbr:Ulm ;
+    dbo:doctoralAdvisor dbr:Alfred_Kleiner ;
+    dbo:employer dbr:University_of_Bern, dbr:Patent_Office_Bern ;
+    dbo:knownFor dbr:Theory_of_relativity ;
+    dbo:award dbr:Nobel_Prize_in_Physics .
+
+dbr:Ulm a dbo:City ;
+    dbo:country dbr:Germany .
+
+dbr:University_of_Bern a dbo:University ;
+    dbo:location dbr:Bern .
+
+dbr:Bern a dbo:City ;
+    dbo:country dbr:Switzerland .
+
+dbr:Theory_of_relativity a dbo:ScientificTheory ;
+    dbo:field dbr:Physics .
+
+dbr:Nobel_Prize_in_Physics a dbo:Award ;
+    dbo:year "1921"^^xsd:gYear .
+
+dbr:Alfred_Kleiner a dbo:Person ;
+    dbo:employer dbr:University_of_Zurich .
+
+dbr:Patent_Office_Bern a dbo:Organization ;
+    dbo:location dbr:Bern .t

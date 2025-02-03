@@ -1,0 +1,10 @@
+id,label,name,type,properties
+1,Person,Albert Einstein,ENTITY,"{""birthPlace"":""Ulm""}"
+2,City,Ulm,ENTITY,"{""country"":""Germany""}"
+3,Person,Alfred Kleiner,ENTITY,"{}"
+4,University,University of Bern,ENTITY,"{""location"":""Bern""}"
+5,City,Bern,ENTITY,"{""country"":""Switzerland""}"
+6,ScientificTheory,Theory of Relativity,ENTITY,"{""field"":""Physics""}"
+7,Award,Nobel Prize in Physics,ENTITY,"{""year"":1921}"
+8,Organization,Patent Office Bern,ENTITY,"{""location"":""Bern""}"
+9,University,University of Zurich,ENTITY,"{}"
