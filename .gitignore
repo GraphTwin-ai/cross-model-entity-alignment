@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+on_device_paths.txt
+
 # C extensions
 *.so
 
