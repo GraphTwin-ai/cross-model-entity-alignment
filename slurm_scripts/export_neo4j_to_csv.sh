@@ -1,10 +1,10 @@
-BATCH --job-name=neo4j_export       # Set the job name 
+#SBATCH --job-name=neo4j_export       # Set the job name 
 #SBATCH --output=neo4j_export.log     # Set the output log file 
 #SBATCH --error=neo4j_export.err      # Set the error log file 
 #SBATCH --nodes=1                     # Request one node 
 #SBATCH --ntasks=1                    # Run a single task 
 #SBATCH --cpus-per-task=8             # Allocate 8 CPUs per task 
-#SBATCH --mem=8G                      # Allocate 32 GB of memory 
+#SBATCH --mem=32G                      # Allocate 32 GB of memory 
 #SBATCH --time=12:00:00               # Set maximum runtime to 24 hours 
 #SBATCH --partition=cpu_long          # Set the partition name 
 #SBATCH --mail-type=ALL               # Send an email on all job events 
@@ -25,9 +25,9 @@ sleep 60  # Wait for Neo4j startup
  
 echo "Starting RDF export of nodes..." >> $SLURM_OUTPUT
 
-NODES_QUERY="CALL apoc.export.csv.query("MATCH (n) RETURN id(n) as id, LABELS(n) as labels, n.uri as name, properties(n) as properties", "nodes.csv", {}) YIELD file, source, format, nodes, relationships, properties, time RETURN file, source, format, nodes, relationships, properties, time;"
+NODES_QUERY='CALL apoc.export.csv.query("MATCH (n) RETURN id(n) as id, LABELS(n) as labels, n.uri as name, properties(n) as properties", "nodes.csv", {}) YIELD file, source, format, nodes, relationships, properties, time RETURN file, source, format, nodes, relationships, properties, time;'
 
-cypher-shell -u neo4j -p password $NODES_QUERY > cypher_import_output.log 2>&1 
+cypher-shell -u neo4j -p password "$NODES_QUERY" > cypher_import_output.log 2>&1 
  
 # Check if import was successful 
 if [ $? -ne 0 ]; then 
@@ -40,9 +40,9 @@ fi
 
 echo "Starting RDF export of edges..." >> $SLURM_OUTPUT 
 
-EDGES_QUERY="CALL apoc.export.csv.query("MATCH (n)-[r]->(m) RETURN id(n) as start, id(m) as end, TYPE(r) as type, properties(r) as properties","edges.csv",{}) YIELD file, source, format, nodes, relationships, properties, time RETURN file, source, format, nodes, relationships, properties, time;"
+EDGES_QUERY='CALL apoc.export.csv.query("MATCH (n)-[r]->(m) RETURN id(n) as start, id(m) as end, TYPE(r) as type, properties(r) as properties","edges.csv",{}) YIELD file, source, format, nodes, relationships, properties, time RETURN file, source, format, nodes, relationships, properties, time;'
 
-cypher-shell -u neo4j -p password $EDGES_QUERY > cypher_import_output.log 2>&1 
+cypher-shell -u neo4j -p password "$EDGES_QUERY" > cypher_import_output.log 2>&1 
  
 # Check if import was successful 
 if [ $? -ne 0 ]; then 
