@@ -1,3 +1,4 @@
+#!/bin/bash
 #SBATCH --job-name=neo4j_export       # Set the job name 
 #SBATCH --output=neo4j_export.log     # Set the output log file 
 #SBATCH --error=neo4j_export.err      # Set the error log file 
