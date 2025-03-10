@@ -1,5 +1,6 @@
 @prefix dbo: <http://dbpedia.org/ontology/> .
 @prefix dbr: <http://dbpedia.org/resource/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 dbr:Albert_Einstein a dbo:Person ;
     dbo:birthPlace dbr:Ulm ;
@@ -27,4 +28,4 @@ dbr:Alfred_Kleiner a dbo:Person ;
     dbo:employer dbr:University_of_Zurich .
 
 dbr:Patent_Office_Bern a dbo:Organization ;
-    dbo:location dbr:Bern .t
+    dbo:location dbr:Bern .
