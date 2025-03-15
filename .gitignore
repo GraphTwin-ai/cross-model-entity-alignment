@@ -4,7 +4,8 @@ __pycache__/
 *$py.class
 
 on_device_paths.txt
-
+apache-jena*
+jdk*
 # C extensions
 *.so
 
