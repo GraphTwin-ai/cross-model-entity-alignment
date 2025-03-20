@@ -20,7 +20,7 @@ def merge_pair(ids, pair, new_token):
     updated_ids = []
     pos = 0
     while pos < len(ids):
-        if ids[pos] == pair[0] and ids[pos+1] == pair[1] and pos < len(ids) - 1:
+        if pos < len(ids) - 1 and ids[pos] == pair[0] and ids[pos+1] == pair[1]:
             updated_ids.append(new_token)
             pos += 2 #skip the two merged tokens
         else:
@@ -47,38 +47,52 @@ def train(ids: list, vocab_size: int):
 
 
 def decode(ids, vocab):
+    """given a list of idx in [0, vocab_size]
+    returns the corresponding python string"""
     tokens = b"".join(vocab[idx] for idx in ids)
-    text = tokens.decode("utf-8")
+    text = tokens.decode("utf-8", errors="replace") #to replace invalid byte seqs with a placeholder char
     return text
         
-    
+def encode(txt, merges):
+    """given a python string
+    returns the corresponding list of tokens"""
+    tokens = list(txt.encode("utf-8"))
+    while len(tokens) >= 2: #loops until we break
+        freqs = get_pair_freqs(tokens) #we don't care about the frequencies, we only need the pairs
+        pair = min(freqs, key=lambda p: merges.get(p, float("inf"))) #get the earliest pair in freqs | merges. get inf if no intersection
+        if pair not in merges: #the case when no intersection between merges and freqs 
+            break #nothing to merge
+        tokens = merge_pair(tokens, pair, merges[pair])
+    return tokens 
+            
+            
+            
+
+
 
         
             
 def main():
-    txt = "I love food, I love pizza!"
+    
+    txt = "I love food, I love pizza!, My name is Mohammed, This is only a test, hahahah, okay, anyways, hay hay"
     raw_bytes = txt.encode("utf-8")
-    tokens = list(map(int, raw_bytes))
-    vocab, _ = train(tokens, vocab_size=280)
+    tokens = list(raw_bytes)
+    # print(tokens)
+    # tokens = list(map(int, raw_bytes))
+    vocab, merges = train(tokens, vocab_size=280)
+
+    tokens = encode("My PC is very slow", merges)
+    # print(tokens)
+
     string = decode(tokens, vocab)
-    return string
+    print(string)
+    # return string
+
 
 
 
 if __name__ == "__main__":
-    # ids = [12, 13, 18, 12, 13]
-    # freqs = get_pair_freqs(ids)
-    # top_pair = max(freqs, key=freqs.get)
-    # print(top_pair)
-    
-    # new_token = 19
-    # print(merge_pair(ids, top_pair, new_token))
 
-    # file = open("test_text.txt", "r")
-    # txt = file.read()
-
-    # print(main(txt= "aaabdaaabac", vocab_size=270))
-    # print(chr((197, 140)))
-    print(main())    
+    main()   
 
     
