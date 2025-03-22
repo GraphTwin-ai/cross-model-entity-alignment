@@ -2,6 +2,11 @@ from utils import get_pair_freqs, merge_pair, render_token
 import regex as re
 
 
+COLOR_LIST = [
+    '102;194;165', '252;141;98', '141;160;203',
+    '231;138;195', '166;216;84', '255;217;47'
+]
+
 
 class CEGATokenize:
     """Tokenizer Class for CEGA"""
@@ -78,7 +83,7 @@ class CEGATokenize:
         return tokens 
 
     def encode(self, text, include_special=False):
-        if include_special:
+        if not include_special:
             tokens = self.encode_no_special(text)
             return tokens
         
@@ -163,8 +168,21 @@ class CEGATokenize:
         self.merges = merges
         self.special_tokens = special_tokens
         self.vocab = self._build_vocab()
+
+    def show_tokens(text, tokenizer):
+        token_ids = tokenizer.encode(text)
+
+        for idx, t in enumerate(token_ids):
+            color = COLOR_LIST[idx % len(COLOR_LIST)]
+            print(
+                f'\033[48;2;{color}m' +
+                tokenizer.decode([t]) +
+                '\033[0m',
+                end=' '
+            )
+        print() 
     
-    
+
 
 
 
