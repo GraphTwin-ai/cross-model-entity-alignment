@@ -169,14 +169,14 @@ class CEGATokenize:
         self.special_tokens = special_tokens
         self.vocab = self._build_vocab()
 
-    def show_tokens(text, tokenizer):
-        token_ids = tokenizer.encode(text)
+    def show_tokens(self, text):
+        token_ids = self.encode(text)
 
         for idx, t in enumerate(token_ids):
             color = COLOR_LIST[idx % len(COLOR_LIST)]
             print(
                 f'\033[48;2;{color}m' +
-                tokenizer.decode([t]) +
+                self.decode([t]) +
                 '\033[0m',
                 end=' '
             )
