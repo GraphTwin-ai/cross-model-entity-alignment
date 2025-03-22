@@ -1,12 +1,13 @@
 
+import unicodedata
 
 
-def get_pair_freqs(ids: list):
+def get_pair_freqs(ids: list, freqs = None):
     """computes frequencies for all consecutive pairs
     Inputs: a list of utf8 codes (0 - 255)
     Returns a dictionary with the frequencies of consecutive pairs
     example: ids = [12, 13, 18, 12, 13] -> {(12, 13): 2, (13, 18): 1, (18, 12): 1}"""
-    freqs = {}
+    freqs = {} if freqs is None else freqs
     for x, y in zip(ids, ids[1:]):
         freqs[(x, y)] = freqs.get((x, y), 0) + 1
     return freqs
@@ -20,7 +21,7 @@ def merge_pair(ids, pair, new_token):
     updated_ids = []
     pos = 0
     while pos < len(ids):
-        if ids[pos] == pair[0] and ids[pos+1] == pair[1] and pos < len(ids) - 1:
+        if pos < len(ids) - 1 and ids[pos] == pair[0] and ids[pos+1] == pair[1]:
             updated_ids.append(new_token)
             pos += 2 #skip the two merged tokens
         else:
@@ -29,41 +30,22 @@ def merge_pair(ids, pair, new_token):
     return updated_ids
 
 
-def train(ids: list, vocab_size: int):
-    vocab = list(range(256))
-    new_token = 256
-    merges = {} #to track merged ids
-    while new_token < vocab_size:
-        freqs = get_pair_freqs(ids)
-        top_pair = max(freqs, key=freqs.get)
-        if freqs[top_pair] == 1: break
-        ids = merge_pair(ids, top_pair, new_token)
-        vocab.append(new_token)
-        merges[new_token] = chr(top_pair[0]), chr(top_pair[1])
-        new_token += 1
-
-    return vocab, merges
-
-def main(txt: str, vocab_size: int):
-    raw_bytes = txt.encode("utf-8")
-    tokens = list(map(int, raw_bytes))
-    vocab = train(tokens, vocab_size=vocab_size)
-    return vocab
-
-
-
-if __name__ == "__main__":
-    # ids = [12, 13, 18, 12, 13]
-    # freqs = get_pair_freqs(ids)
-    # top_pair = max(freqs, key=freqs.get)
-    # print(top_pair)
+#helper functions that will be used in the saving process
+def replace_control_characters(s: str) -> str:
+    # we don't want to print control characters
+    # which distort the output (e.g. \n or much worse)
+    # https://stackoverflow.com/questions/4324790/removing-control-characters-from-a-string-in-python/19016117#19016117
+    # http://www.unicode.org/reports/tr44/#GC_Values_Table
+    chars = []
+    for ch in s:
+        if unicodedata.category(ch)[0] != "C":
+            chars.append(ch) # this character is ok
+        else:
+            chars.append(f"\\u{ord(ch):04x}") # escape
+    return "".join(chars)
     
-    # new_token = 19
-    # print(merge_pair(ids, top_pair, new_token))
-
-    file = open("test_text.txt", "r")
-    txt = file.read()
-
-    print(main(txt= "aaabdaaabac", vocab_size=270))
-
-    
+def render_token(t: bytes) -> str:
+    # pretty print a token, escaping control characters
+    s = t.decode('utf-8', errors='replace')
+    s = replace_control_characters(s)
+    return s
