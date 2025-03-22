@@ -1,12 +1,13 @@
 
+import unicodedata
 
 
-def get_pair_freqs(ids: list):
+def get_pair_freqs(ids: list, freqs = None):
     """computes frequencies for all consecutive pairs
     Inputs: a list of utf8 codes (0 - 255)
     Returns a dictionary with the frequencies of consecutive pairs
     example: ids = [12, 13, 18, 12, 13] -> {(12, 13): 2, (13, 18): 1, (18, 12): 1}"""
-    freqs = {}
+    freqs = {} if freqs is None else freqs
     for x, y in zip(ids, ids[1:]):
         freqs[(x, y)] = freqs.get((x, y), 0) + 1
     return freqs
@@ -29,70 +30,22 @@ def merge_pair(ids, pair, new_token):
     return updated_ids
 
 
-def train(ids: list, vocab_size: int):
-    vocab = {idx: bytes([idx]) for idx in range(256)} #raw bytes of 
-    new_token = 256
-    ids = list(ids) 
-    merges = {} #to track merged ids
-    while new_token < vocab_size:
-        freqs = get_pair_freqs(ids)
-        top_pair = max(freqs, key=freqs.get)
-        if freqs[top_pair] == 1: break
-        ids = merge_pair(ids, top_pair, new_token)
-        merges[top_pair] = new_token
-        vocab[new_token] = vocab[top_pair[0]] + vocab[top_pair[1]]
-        new_token += 1
-
-    return vocab, merges
-
-
-def decode(ids, vocab):
-    """given a list of idx in [0, vocab_size]
-    returns the corresponding python string"""
-    tokens = b"".join(vocab[idx] for idx in ids)
-    text = tokens.decode("utf-8", errors="replace") #to replace invalid byte seqs with a placeholder char
-    return text
-        
-def encode(txt, merges):
-    """given a python string
-    returns the corresponding list of tokens"""
-    tokens = list(txt.encode("utf-8"))
-    while len(tokens) >= 2: #loops until we break
-        freqs = get_pair_freqs(tokens) #we don't care about the frequencies, we only need the pairs
-        pair = min(freqs, key=lambda p: merges.get(p, float("inf"))) #get the earliest pair in freqs | merges. get inf if no intersection
-        if pair not in merges: #the case when no intersection between merges and freqs 
-            break #nothing to merge
-        tokens = merge_pair(tokens, pair, merges[pair])
-    return tokens 
-            
-            
-            
-
-
-
-        
-            
-def main():
+#helper functions that will be used in the saving process
+def replace_control_characters(s: str) -> str:
+    # we don't want to print control characters
+    # which distort the output (e.g. \n or much worse)
+    # https://stackoverflow.com/questions/4324790/removing-control-characters-from-a-string-in-python/19016117#19016117
+    # http://www.unicode.org/reports/tr44/#GC_Values_Table
+    chars = []
+    for ch in s:
+        if unicodedata.category(ch)[0] != "C":
+            chars.append(ch) # this character is ok
+        else:
+            chars.append(f"\\u{ord(ch):04x}") # escape
+    return "".join(chars)
     
-    txt = "I love food, I love pizza!, My name is Mohammed, This is only a test, hahahah, okay, anyways, hay hay"
-    raw_bytes = txt.encode("utf-8")
-    tokens = list(raw_bytes)
-    # print(tokens)
-    # tokens = list(map(int, raw_bytes))
-    vocab, merges = train(tokens, vocab_size=280)
-
-    tokens = encode("My PC is very slow", merges)
-    # print(tokens)
-
-    string = decode(tokens, vocab)
-    print(string)
-    # return string
-
-
-
-
-if __name__ == "__main__":
-
-    main()   
-
-    
+def render_token(t: bytes) -> str:
+    # pretty print a token, escaping control characters
+    s = t.decode('utf-8', errors='replace')
+    s = replace_control_characters(s)
+    return s
